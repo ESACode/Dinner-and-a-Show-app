@@ -2,8 +2,6 @@ const btnSearch = document.getElementById('searchButton');
 const search = document.getElementById('search');
 const main = document.querySelector('main');
 const paragraph = document.querySelector('p');
-const section = document.querySelector('section');
-const theParent = document.querySelector('#theParent');
 
 //Fetch Functions ---------------------------------------------------------------------------------------------------------------------
 function fetchList(url) {
@@ -27,28 +25,17 @@ function generateList(data) {
         <button id="${element.show.name}" class="select">Get More Info and a Recipe</button>
     `;
     })
-    main.innerHTML = '';
+    main.innerHTML = html1;
     paragraph.innerText = "Select a show below!";
-    section.innerHTML = html1;
 }
 
 function generateInfo(data) {
     paragraph.innerText = "";
-    section.innerHTML = '';
     main.innerHTML = `
-    <img src="${data.image.medium}" alt>
-    <p class="text-light">${data.name}</p>
-    <p class="text-light">${data.summary}</p>
+    <img src="${data.image.medium}" class="center-block" alt>
+    <p class="text-light text-center">${data.name}</p>
+    <section class="text-light text-center">${data.summary}</section>
     `;
-}
-
-function doSomething(e) {
-    if (e.target !== e.currentTarget) {
-        let clickedItem = e.target.id;
-        fetchList(`http://api.tvmaze.com/singlesearch/shows?q=${clickedItem}`)
-            .then(data => generateInfo(data))
-    }
-    e.stopPropagation();
 }
 
 //Event Listeners ---------------------------------------------------------------------------------------------------------------------
@@ -57,4 +44,9 @@ btnSearch.addEventListener('click', () => {
         .then(data => generateList(data))
 });
 
-theParent.addEventListener("click", doSomething, false);
+document.addEventListener('click', e => {
+    if(e.target.className === 'select') {
+        fetchList(`http://api.tvmaze.com/singlesearch/shows?q=${e.target.id}`)
+            .then(data => generateInfo(data))
+     }
+ });
