@@ -3,17 +3,20 @@ const search = document.getElementById('search');
 const main = document.querySelector('main');
 const paragraph = document.querySelector('p');
 
+
 //Fetch Functions ---------------------------------------------------------------------------------------------------------------------
-function fetchList(url) {
+function fetchInfo(url) {
     return fetch(url)
         .then(response => response.json())
 }
 
-function fetchRecipe(url) {
+function fetchJSON(url) {
     return fetch(url)
         .then(response => response.json())
+        .then(output => console.log(output[Math.floor(Math.random() * output.length)]))
 }
 
+fetchJSON(`recipe.json`);
 //Helper Function ---------------------------------------------------------------------------------------------------------------------
 
 function generateList(data) {
@@ -32,21 +35,36 @@ function generateList(data) {
 function generateInfo(data) {
     paragraph.innerText = "";
     main.innerHTML = `
-    <img src="${data.image.medium}" class="center-block" alt>
-    <p class="text-light text-center">${data.name}</p>
-    <section class="text-light text-center">${data.summary}</section>
+    <div>
+        <img src="${data.image.medium}" class="center-block" alt>
+        <p class="text-light text-center">${data.name}</p>
+        <section class="text-light text-center">${data.summary}</section>
+    </div>
     `;
+}
+
+function generateRecipe(data) {
+    let randomRecipe = data[Math.floor(Math.random() * data.length)];
+    let html2 = `
+    <div>
+        <img src="${randomRecipe.imageURL}" alt>
+        <p class="text-light text-center">${randomRecipe.name}</p>
+    </div>
+    `;
+    main.insertAdjacentHTML('beforeend', html2);
 }
 
 //Event Listeners ---------------------------------------------------------------------------------------------------------------------
 btnSearch.addEventListener('click', () => {
-    fetchList(`http://api.tvmaze.com/search/shows?q=${search.value}`)
-        .then(data => generateList(data))
+    fetchInfo(`http://api.tvmaze.com/search/shows?q=${search.value}`)
+        .then( data => generateList(data) )
 });
 
 document.addEventListener('click', e => {
     if(e.target.className === 'select') {
-        fetchList(`http://api.tvmaze.com/singlesearch/shows?q=${e.target.id}`)
-            .then(data => generateInfo(data))
+        fetchInfo(`http://api.tvmaze.com/singlesearch/shows?q=${e.target.id}`)
+            .then( data => generateInfo(data) )
+            .then( () => fetchInfo(`recipe.json`) )
+            .then( data => generateRecipe(data) )
      }
  });
