@@ -69,13 +69,13 @@ function fetchInfo(url) {
         .then(response => response.json())
 }
 
-function fetchJSON(url) {
-    return fetch(url)
-        .then(response => response.json())
-        .then(output => console.log(output[Math.floor(Math.random() * output.length)]))
-}
+//function fetchJSON(url) {
+    //return fetch(url)
+        //.then(response => response.json())
+        //.then(output => console.log(output[Math.floor(Math.random() * output.length)]))
+//}
 
-fetchJSON(`recipe.json`);
+//fetchJSON(`recipe.json`);
 //Helper Function ---------------------------------------------------------------------------------------------------------------------
 
 function generateList(data) {
@@ -135,8 +135,11 @@ function generateRecipe(data) {
 
 //Event Listeners ---------------------------------------------------------------------------------------------------------------------
 btnSearch.addEventListener('click', () => {
+    let regEx = /[a-zA-Z]/;
+    if(regEx.test(search.value)){
     fetchInfo(`http://api.tvmaze.com/search/shows?q=${search.value}`)
         .then( data => generateList(data) )
+    }
 });
 
 document.addEventListener('click', e => {
