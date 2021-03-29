@@ -5,7 +5,7 @@ const heading = document.getElementById('heading');
 const paragraph = document.querySelector('p');
 const header = document.querySelector('header');
 
-//Hold some sample TV shows to suggest user search for.  
+//Hold some sample TV shows to suggest user search for.  // Comment on spaces
 const showSamples = [
     {
         name: "Breaking Bad",
@@ -45,9 +45,9 @@ const showSamples = [
     },
 ];
 
-let html1 = '';
+let html1 = ''; // Comment on naming
 
- //Display the sample tv shows on page everytime index.html is loaded.   
+ //Display the sample tv shows on page everytime index.html is loaded.
 for(let i = 0; i < showSamples.length; i++) {
 
     let display = showSamples[i];
@@ -64,11 +64,12 @@ for(let i = 0; i < showSamples.length; i++) {
 main.insertAdjacentHTML('beforeend', html1);
 
 //Fetch Functions ---------------------------------------------------------------------------------------------------------------------
-function fetchInfo(url) {
+async function fetchInfo(url) { // Comment on async
     return fetch(url)
         .then(response => response.json())
 }
 
+// Comment on dead code
 //function fetchJSON(url) {
     //return fetch(url)
         //.then(response => response.json())
@@ -79,9 +80,9 @@ function fetchInfo(url) {
 //Helper Function ---------------------------------------------------------------------------------------------------------------------
 
 function generateList(data) {
-    let html2 = '';
+    let html2 = ''; // Comment on naming
     data.filter(element => element.show.image !== null) //filter out shows that have no image to display
-        .forEach(element => {
+        .forEach(element => {  // Comment on map
         html2 += `
         <div class="text-light text-center">
             <img src="${element.show.image.medium}" alt>
@@ -106,7 +107,7 @@ function generateInfo(data) {
 }
 
 function generateRecipe(data) {
-    let randomRecipe = data[Math.floor(Math.random() * data.length)];
+    let randomRecipe = data[Math.floor(Math.random() * data.length)]; // Comment on error handling
     let html3 = `
     <div class="text-center">
         <img src="${randomRecipe.imageURL}" class="img-responsive" alt>
@@ -125,19 +126,19 @@ function generateRecipe(data) {
                 ${randomRecipe.ingredients.map(elmt => `
                 <li>${elmt.name} ${elmt.quantity}</li>
                 `).join('')}
-            </ul>
+            </ul
         </div>
     </div>
     `;
-    main.insertAdjacentHTML('beforeend', html3);
+    main.insertAdjacentHTML('beforeend', html3); // Comment on naming
     header.insertAdjacentHTML('beforeend', '<a href="index.html">New Search</a>');
 }
 
 //Event Listeners ---------------------------------------------------------------------------------------------------------------------
 btnSearch.addEventListener('click', () => {
-    let regEx = /[a-zA-Z]/;
+    let regEx = /[a-zA-Z]/; // Comment on regex and errors
     if(regEx.test(search.value)){
-    fetchInfo(`http://api.tvmaze.com/search/shows?q=${search.value}`)
+    fetchInfo(`http://api.tvmaze.com/search/shows?q=${search.value}`) // Comment on indentation
         .then( data => generateList(data) )
     }
 });
