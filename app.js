@@ -1,11 +1,11 @@
 const btnSearch = document.getElementById('searchButton');
 const search = document.getElementById('search');
 const main = document.querySelector('main');
-const heading = document.getElementById('heading');
 const paragraph = document.querySelector('p');
 const header = document.querySelector('header');
+const suggestions = document.getElementById('suggestions');
 
-//Hold some sample TV shows to suggest user search for.  
+//Hold some sample TV shows to suggest user search for
 const showSamples = [
     {
         name: "Breaking Bad",
@@ -45,108 +45,144 @@ const showSamples = [
     },
 ];
 
-let html1 = '';
+let showSuggestionsHTML = '';
 
- //Display the sample tv shows on page everytime index.html is loaded.   
+ //Display the sample tv shows on page everytime index.html is loaded
 for(let i = 0; i < showSamples.length; i++) {
 
     let display = showSamples[i];
 
-    html1 += `
-        <div class="text-light text-center">
-            <img src="${display.image}" alt="${display.alt}">
-            <h1>${display.name}</h1>
-            <p>${display.summary}</p>
+    showSuggestionsHTML += `
+        <div class="text-light text-center border border-danger rounded samples">
+            <img src="${display.image}" alt="${display.alt}" class="m-4">
+            <h1 class="shadow-lg text-warning">${display.name}</h1>
+            <p class="mx-2 mt-2 shadow-lg">${display.summary}</p>
         </div>
     `;
 }
 
-main.insertAdjacentHTML('beforeend', html1);
+suggestions.innerHTML = showSuggestionsHTML;
 
-//Fetch Functions ---------------------------------------------------------------------------------------------------------------------
-function fetchInfo(url) {
+//Fetch Function
+async function fetchInfo(url) {
     return fetch(url)
         .then(response => response.json())
 }
 
-//function fetchJSON(url) {
-    //return fetch(url)
-        //.then(response => response.json())
-        //.then(output => console.log(output[Math.floor(Math.random() * output.length)]))
-//}
-
-//fetchJSON(`recipe.json`);
-//Helper Function ---------------------------------------------------------------------------------------------------------------------
-
+//Helper Functions
 function generateList(data) {
-    let html2 = '';
-    data.filter(element => element.show.image !== null) //filter out shows that have no image to display
-        .forEach(element => {
-        html2 += `
-        <div class="text-light text-center">
-            <img src="${element.show.image.medium}" alt>
-            <h2>${element.show.name}</h2>
-            <button id="${element.show.name}" class="select">Get More Info and a Recipe</button>
+    if(data.length === 0){
+        header.innerHTML = `
+        <div class="container text-center">
+            <h1 class="display-1 text-light mt-5">Dinner and a Show</h1>
+            <a class="btn btn-warning my-4" href="index.html" role="button">New Search</a>
         </div>
-    `;
-    })
-    main.innerHTML = html2;
-    heading.innerText = "Select a show below!";
+        `;
+
+        main.innerHTML = `
+            <div class="text-center text-light">
+                <h3>Either no results match this query, or too many do. Click the yellow button above to start a new search.<h3>
+            </div>
+        `;
+
+    } else {
+        let showListContainerHTML = `
+        <div class="border-bottom border-warning my-3 mx-5">
+            <h3 class="text-warning text-center m-4">Select a Show Below!</h3>
+        </div>
+        <div class="d-flex flex-column flex-md-row flex-md-wrap px-3" id="suggestions"></div>
+        `;
+        main.innerHTML = showListContainerHTML;
+        let suggestions = document.getElementById('suggestions');
+        let showListHTML = '';
+        data.filter(element => element.show.image !== null) //filter out shows that have no image to display
+            .forEach(element => {
+            showListHTML += `
+            <div class="text-center border border-danger rounded samples">
+                <img src="${element.show.image.medium}" class="m-3">
+                <h2 class="text-warning m-3">${element.show.name}</h2>
+                <button id="${element.show.name}" class="select btn btn-primary m-3">Get More Info and a Recipe!</button>
+            </div>
+        `;
+        })
+        suggestions.innerHTML = showListHTML;
+        header.innerHTML = `
+            <div class="container text-center">
+                <h1 class="display-1 text-light mt-5">Dinner and a Show</h1>
+                <a class="btn btn-warning my-4" href="index.html" role="button">New Search</a>
+            </div>
+        `;
+    }
 }
 
 function generateInfo(data) {
-    heading.innerText = "";
-    main.innerHTML = `
-    <div class="text-center">
-        <img src="${data.image.medium}" class="center-block" alt>
-        <p class="text-light text-center">${data.name}</p>
-        <section class="text-light text-center">${data.summary}</section>
+    let showRecipeContainerHTML = `
+        <div class="container mt-lg-5">
+            <div class="row px-3" id="result">
+
+            </div>
+        </div>
+    `;
+    main.innerHTML = showRecipeContainerHTML;
+    let result = document.getElementById('result');
+    result.innerHTML = `
+    <div class="col-12 col-md-6 col-lg-12 d-lg-flex flex-lg-row text-center mt-5 border border-bottom-0 border-danger rounded">
+        <img src="${data.image.medium}" class="pt-5">
+        <div class="d-lg-flex flex-lg-column justify-content-lg-between flex-lg-grow-1 py-5">
+            <h2 class="text-warning">${data.name}</h2>
+            <h5 class="text-light pt-4">Network: ${data.network.name}</h5>
+            <section class="text-light pt-4 px-lg-5">${data.summary}</section>
+        </div>
     </div>
     `;
 }
 
 function generateRecipe(data) {
+    let result = document.getElementById('result');
     let randomRecipe = data[Math.floor(Math.random() * data.length)];
-    let html3 = `
-    <div class="text-center">
-        <img src="${randomRecipe.imageURL}" class="img-responsive" alt>
-        <h1 class="text-light text-center">${randomRecipe.name}</h1>
-        <div class="text-light text-center">
-            <strong>Steps</strong>
-            <ol>
-                ${randomRecipe.steps.map(elmt => `
-                <li>${elmt}</li>
-                `).join('')}
-            </ol>
+    let recipeHTML = `
+    <div class="col-12 col-md-6 col-lg-12 mt-5 border border-bottom-0 border-danger rounded">
+        <div class="text-center">
+            <img src="${randomRecipe.imageURL}" class="img-recipe pt-5 text-center">
         </div>
-        <div class="text-light text-center">
-            <strong>Ingredients</strong>
-            <ul>
-                ${randomRecipe.ingredients.map(elmt => `
-                <li>${elmt.name} ${elmt.quantity}</li>
-                `).join('')}
-            </ul>
+        <div class="d-lg-flex flex-lg-column flex-lg-grow-1 p-5">
+            <h2 class="text-warning text-center">${randomRecipe.name}</h2>
+            <div class="text-light">
+                <h3 class="border-bottom border-warning text-center p-4">Ingredients</h3>
+                <ul>
+                    ${randomRecipe.ingredients.map(elmt => `
+                        <li class="my-3">${elmt.name}:  ${elmt.quantity}</li>
+                    `).join('')}
+                </ul>
+            </div>
+            <div class="text-light">
+                <h3 class="border-bottom border-warning text-center p-4">Steps</h3>
+                <ol>
+                    ${randomRecipe.steps.map(elmt => `
+                    <li class="my-3">${elmt}</li>
+                    `).join('')}
+                </ol>
+            </div>
         </div>
     </div>
     `;
-    main.insertAdjacentHTML('beforeend', html3);
-    header.insertAdjacentHTML('beforeend', '<a href="index.html">New Search</a>');
+    result.insertAdjacentHTML('beforeend', recipeHTML);
 }
 
-//Event Listeners ---------------------------------------------------------------------------------------------------------------------
+//Event Listeners
 btnSearch.addEventListener('click', () => {
-    let regEx = /[a-zA-Z]/;
-    if(regEx.test(search.value)){
-    fetchInfo(`http://api.tvmaze.com/search/shows?q=${search.value}`)
-        .then( data => generateList(data) )
+    let regEx = /\w/;
+    if(regEx.test(search.value)){  //make sure user has typed something valid in the search bar
+        fetchInfo(`http://api.tvmaze.com/search/shows?q=${search.value}`)
+            .then( data => generateList(data) )
     }
 });
 
 document.addEventListener('click', e => {
-    if(e.target.className === 'select') {
+    if(e.target.classList.contains('select')) {
         fetchInfo(`http://api.tvmaze.com/singlesearch/shows?q=${e.target.id}`)
             .then( data => generateInfo(data) )
-            .then( () => fetchInfo(`recipe.json`) )
+            .then( () => fetchInfo('recipe.json') )
             .then( data => generateRecipe(data) )
      }
  });

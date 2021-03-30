@@ -1,0 +1,33 @@
+.img-recipe {
+    width: 210px;
+    height: 295px;
+}
+
+
+ul {
+    text-align: center;
+    list-style-position: inside;
+}
+
+
+ol {
+    text-align: center;
+    list-style-position: inside;
+}
+
+@media (min-width: 768px) {
+    .samples {
+        width: 50%;
+    }
+}
+
+@media (min-width: 1025px) {
+    .samples {
+        width: 33.33%;
+    }
+
+    .img-recipe {
+        width: 33.33%;
+        height: auto;
+    }
+}
