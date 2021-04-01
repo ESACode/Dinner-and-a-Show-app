@@ -64,14 +64,14 @@ for(let i = 0; i < showSamples.length; i++) {
 suggestions.innerHTML = showSuggestionsHTML;
 
 //Fetch Function
-async function fetchInfo(url) {
+async function fetchInfo(url) {  //works for fetching info from both the web api and the recipe.json file
     return fetch(url)
         .then(response => response.json())
 }
 
 //Helper Functions
-function generateList(data) {
-    if(data.length === 0){
+function generateList(data) {  //generates info about list of shows that match user query and displays them in html
+    if(data.length === 0){ //if api returns no results, display this error message
         header.innerHTML = `
         <div class="container text-center">
             <h1 class="display-1 text-light mt-5">Dinner and a Show</h1>
@@ -95,7 +95,7 @@ function generateList(data) {
         main.innerHTML = showListContainerHTML;
         let suggestions = document.getElementById('suggestions');
         let showListHTML = '';
-        data.filter(element => element.show.image !== null) //filter out shows that have no image to display
+        data.filter(element => element.show.image !== null) //filter out shows api returns that have no image to display
             .forEach(element => {
             showListHTML += `
             <div class="text-center border border-danger rounded samples">
@@ -115,7 +115,7 @@ function generateList(data) {
     }
 }
 
-function generateInfo(data) {
+function generateInfo(data) {  //generates info about show user selected to display in html
     let showRecipeContainerHTML = `
         <div class="container mt-lg-5">
             <div class="row px-3" id="result">
@@ -137,7 +137,7 @@ function generateInfo(data) {
     `;
 }
 
-function generateRecipe(data) {
+function generateRecipe(data) {  //generates info about a random recipe to display in html
     let result = document.getElementById('result');
     let randomRecipe = data[Math.floor(Math.random() * data.length)];
     let recipeHTML = `
@@ -181,8 +181,8 @@ btnSearch.addEventListener('click', () => {
 document.addEventListener('click', e => {
     if(e.target.classList.contains('select')) {
         fetchInfo(`http://api.tvmaze.com/singlesearch/shows?q=${e.target.id}`)
-            .then( data => generateInfo(data) )
+            .then( data => generateInfo(data) )  //show info about the tv show the web api returns
             .then( () => fetchInfo('recipe.json') )
-            .then( data => generateRecipe(data) )
+            .then( data => generateRecipe(data) )  //show info about a random recipe selected from recipe.json file
      }
  });
